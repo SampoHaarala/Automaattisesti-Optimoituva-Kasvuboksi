@@ -6,6 +6,10 @@ import matplotlib.dates as mdates
 # CSV-tiedoston nimi
 csv_file = "kasvuloki.csv"
 
+# Aikarajat graafeihin (muotoa "HH:MM")
+START_TIME = "13:00"
+END_TIME = "18:00"
+
 # Tarkista, että tiedosto on olemassa
 if not os.path.exists(csv_file):
     raise FileNotFoundError(f"Tiedostoa '{csv_file}' ei löytynyt.")
@@ -31,8 +35,10 @@ if "timestamp" in df.columns:
     # Poistetaan rivit, joissa aikaväli kahden mittauksen välillä ylittää 10 minuuttia
     df = df[df.index.to_series().diff().fillna(pd.Timedelta(seconds=0)) <= pd.Timedelta(minutes=10)]
 
-    # Poistetaan rivit ennen klo 13.00
-    df = df[df.index.time >= pd.to_datetime("13:00").time()]
+    # Suodatetaan aikarajan mukaan
+    start_t = pd.to_datetime(START_TIME).time()
+    end_t = pd.to_datetime(END_TIME).time()
+    df = df[(df.index.time >= start_t) & (df.index.time <= end_t)]
 
     # Poistetaan duplikaattipäivät: jätetään vain uusin per päivä
     df = df[~df.index.duplicated(keep='last')]
