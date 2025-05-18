@@ -8,12 +8,17 @@ import LinUCB
 
 # 🔍 Automattinen porttihaku
 def find_arduino_port(baudrate=9600, timeout=15):
-    ports = list(serial.tools.list_ports.comports())
+    ports = serial.tools.list_ports.comports()
     for port in ports:
+        desc = port.description.lower()
+        if "bluetooth" in desc or "wireless" in desc:
+            print(f"Ohitetaan Bluetooth-portti: {port.device} - {port.description}")
+            continue
+
         print(f"Testataan portti: {port.device} - {port.description}")
         try:
             ser = serial.Serial(port.device, baudrate=baudrate, timeout=timeout)
-            time.sleep(3)
+            time.sleep(2)
             ser.reset_input_buffer()
 
             ser.write(b'PING\n')
@@ -71,16 +76,21 @@ except RuntimeError as e:
     print(e)
     exit(1)  # Pysäyttää ohjelman
 
+ser.write(b'TURN_LIGHT_ON\n')
+print("TURN_LIGHT_ON")
+time.sleep(5)
+
 ser.write(b'REQUEST_GREEN\n')
 print("REQUEST_GREEN")
-time.sleep(3)
 
 ser.write(b'TURN_LIGHT_ON\n')
 print("TURN_LIGHT_ON")
-time.sleep(3)
+time.sleep(5)
 
 ser.write(b'TURN_LIGHT_OFF\n')
 print("TURN_LIGHT_OFF")
-time.sleep(3)
+
+ser.write(b'ADD_WATER\n')
+print("ADD_WATER")
 
 print("Testi läpi")
