@@ -1,6 +1,15 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
+from datetime import datetime
+
+# 🎯 Aseta graafin alku- ja loppuaika (tai jätä None jos haluat koko datasetin)
+GRAPH_START = "2025-05-18 13:00:00"  # tai esim. "2025-05-18"
+GRAPH_END   = "2025-05-19 00:00:00"  # tai None
+
+# Muunna datetime-objekteiksi jos määritetty
+start_time = pd.to_datetime(GRAPH_START) if GRAPH_START else None
+end_time = pd.to_datetime(GRAPH_END) if GRAPH_END else None
 
 # CSV-tiedoston nimi
 csv_file = "kasvuloki.csv"
@@ -17,6 +26,11 @@ if "timestamp" in df.columns:
     df["timestamp"] = pd.to_datetime(df["timestamp"])
     df.sort_values("timestamp", inplace=True)
     df.set_index("timestamp", inplace=True)
+
+if start_time:
+    df = df[df.index >= start_time]
+if end_time:
+    df = df[df.index <= end_time]
 
 # Valitaan kontekstidatat ja reward
 context_vars = ["temp", "moisture", "red", "deepRed", "blue", "green_before", "resistor_average_before"]

@@ -19,7 +19,7 @@ def find_arduino_port(baudrate=9600, timeout=15):
         print(f"Testataan portti: {port.device} - {port.description}")
         try:
             ser = serial.Serial(port.device, baudrate=baudrate, timeout=timeout)
-            time.sleep(2)
+            time.sleep(2.5)
             ser.reset_input_buffer()
 
             ser.write(b'PING\n')
@@ -27,7 +27,7 @@ def find_arduino_port(baudrate=9600, timeout=15):
             # 🔁 Odota enintään 3 sekuntia vastausta
             start = time.time()
             response = ""
-            while time.time() - start < 3:
+            while time.time() - start < 5:
                 if ser.in_waiting:
                     response = ser.readline().decode('utf-8').strip()
                     break
@@ -72,7 +72,9 @@ else:
     log_df = pd.DataFrame(columns=["timestamp", "temp", "moisture", "red", "deepRed",
                                    "blue", "green_before", "resistor_average_before", "action", 
                                    "green_after", "resistor_average_after", "reward"])
-    
+
+log_df = log_df.drop_duplicates()    
+
 # 📌 Initialisoi LinUCB
 # 3 toimintoa: 0 = DO_NOTHING, 1 = ADD_WATER, 2 = TURN_LIGHT_OFF
 n_actions = 3
@@ -152,6 +154,7 @@ except RuntimeError as e:
 
 # Valo päälle simulaation alkuun.
 ser.write(b'TURN_LIGHT_ON\n')
+time.sleep(2)
 
 # 🔁 Pääsilmukka
 loopNumber = 0
@@ -159,7 +162,7 @@ while True:
     print(f"Loop number: {loopNumber}")
     ser.reset_input_buffer()
     ser.write(b'REQUEST_DATA\n')
-    time.sleep(1)
+    time.sleep(5)
     if ser.in_waiting:
         try:
             # 📥 Sensoridata muotoa: "25.3,61.0,302,512"
@@ -167,7 +170,7 @@ while True:
             line = ser.readline().decode('utf-8').strip()
             temp, moist, red, deepRed, blue, green, resistorAverage = map(float, line.split(','))
             ser.write(b'REQUEST_GREEN\n')
-            time.sleep(1)
+            time.sleep(5)
             line = ser.readline().decode('utf-8').strip()
             green, resistorAverage = map(float, line.split(','))
             context = np.array([[temp, moist, red, deepRed, blue, green, resistorAverage]])
@@ -190,7 +193,7 @@ while True:
 
             # 📥 Uusi mittaus: sama formaatti
             ser.write(b'REQUEST_GREEN\n')
-            time.sleep(1)
+            time.sleep(5)
             line2 = ser.readline().decode('utf-8').strip()
             green2, resistorAverage2 = list(map(float, line2.split(',')))
 
