@@ -162,7 +162,7 @@ while True:
     print(f"Loop number: {loopNumber}")
     ser.reset_input_buffer()
     ser.write(b'REQUEST_DATA\n')
-    time.sleep(5)
+    time.sleep(7)
     if ser.in_waiting:
         try:
             # 📥 Sensoridata muotoa: "25.3,61.0,302,512"

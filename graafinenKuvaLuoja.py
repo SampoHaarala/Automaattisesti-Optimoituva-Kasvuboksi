@@ -7,8 +7,8 @@ import matplotlib.dates as mdates
 csv_file = "kasvuloki.csv"
 
 # Aikarajat graafeihin (muotoa "HH:MM")
-START_TIME = "13:00"
-END_TIME = "18:00"
+START_TIME = "0:00"
+END_TIME = "3:00"
 
 # Tarkista, että tiedosto on olemassa
 if not os.path.exists(csv_file):

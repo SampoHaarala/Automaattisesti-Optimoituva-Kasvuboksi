@@ -4,8 +4,8 @@ import os
 from datetime import datetime
 
 # 🎯 Aseta graafin alku- ja loppuaika (tai jätä None jos haluat koko datasetin)
-GRAPH_START = "2025-05-18 13:00:00"  # tai esim. "2025-05-18"
-GRAPH_END   = "2025-05-19 00:00:00"  # tai None
+GRAPH_START = "2025-05-19 01:00:00"  # tai esim. "2025-05-18"
+GRAPH_END   = "2025-05-19 03:00:00"  # tai None
 
 # Muunna datetime-objekteiksi jos määritetty
 start_time = pd.to_datetime(GRAPH_START) if GRAPH_START else None
